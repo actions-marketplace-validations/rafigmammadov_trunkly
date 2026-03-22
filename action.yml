@@ -1,0 +1,86 @@
+name: "Trunkly 🐘"
+description: "Out of Office assistant for tired maintainers. Auto-labels issues and sets boundaries during off-hours."
+author: "rafigmammadov"
+
+branding:
+  icon: "moon"
+  color: "purple"
+
+inputs:
+  github-token:
+    description: "GitHub token with issues and pull-requests write permission."
+    required: true
+    default: ${{ github.token }}
+
+  timezone:
+    description: "Your local timezone (IANA format, e.g. America/New_York, Europe/London, Asia/Tokyo)."
+    required: false
+    default: "UTC"
+
+  off-hours-start:
+    description: "Start of off-hours in HH:MM (24h) in your timezone. e.g. 18:00"
+    required: false
+    default: "18:00"
+
+  off-hours-end:
+    description: "End of off-hours in HH:MM (24h) in your timezone. e.g. 09:00"
+    required: false
+    default: "09:00"
+
+  off-days:
+    description: "Comma-separated days of the week that are always off. e.g. Saturday,Sunday"
+    required: false
+    default: "Saturday,Sunday"
+
+  label:
+    description: "Label name to apply to issues/PRs opened during off-hours."
+    required: false
+    default: "off-hours 🌙"
+
+  label-color:
+    description: "Hex color (without #) for the label, if it needs to be created."
+    required: false
+    default: "7057ff"
+
+  label-description:
+    description: "Description for the label if it needs to be created."
+    required: false
+    default: "Opened outside of maintainer working hours."
+
+  comment:
+    description: |
+      Message to post as a comment. Supports template variables:
+        {author}     - the issue/PR author's username
+        {label}      - the label that was applied
+        {start}      - off-hours start time
+        {end}        - off-hours end time
+        {timezone}   - your configured timezone
+    required: false
+    default: |
+      Hey @{author}, thanks for opening this! 👋
+
+      I'm currently outside my working hours and will get to this when I'm back.
+      I've tagged this with `{label}` so I don't lose track of it.
+
+      **My working hours:** {end} – {start} ({timezone})
+
+      I appreciate your patience 🐘
+
+  skip-authors:
+    description: "Comma-separated GitHub usernames to never comment on (e.g. yourself, bots)."
+    required: false
+    default: ""
+
+  skip-label:
+    description: "If the issue/PR already has this label, skip processing."
+    required: false
+    default: ""
+
+  dry-run:
+    description: "Set to 'true' to log actions without actually applying labels or posting comments."
+    required: false
+    default: "false"
+
+runs:
+  using: "node20"
+  main: "dist/index.js"
